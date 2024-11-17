@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sales-service
+  name: sales-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sales-service
+  template:
+    metadata:
+      labels:
+        app: sales-service
+    spec:
+      containers:
+        - image: trdhuy21/mscn-tx1-sales-service:latest
+          name: mscn-tx1-sales-service
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: SPRING_KAFKA_BOOTSTRAP-SERVERS
+                  name: common-config
+            - name: BUSINESS_INTELLIGENCE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: BUSINESS_INTELLIGENCE_SERVICE_URL
+                  name: common-config
+            - name: INVENTORY_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: INVENTORY_SERVICE_URL
+                  name: common-config
+            - name: PROCUREMENT_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: PROCUREMENT_SERVICE_URL
+                  name: common-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-service
+spec:
+  selector:
+    app: sales-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+

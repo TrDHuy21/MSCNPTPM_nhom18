@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: procurement-service
+  name: procurement-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: procurement-service
+  template:
+    metadata:
+      labels:
+        app: procurement-service
+    spec:
+      containers:
+        - image: trdhuy21/mscn-tx1-procurement-service:latest
+          name: mscn-tx1-procurement-service
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: SPRING_KAFKA_BOOTSTRAP-SERVERS
+                  name: common-config
+            - name: BUSINESS_INTELLIGENCE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: BUSINESS_INTELLIGENCE_SERVICE_URL
+                  name: common-config
+            - name: INVENTORY_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: INVENTORY_SERVICE_URL
+                  name: common-config
+            - name: SALES_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: SALES_SERVICE_URL
+                  name: common-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: procurement-service
+spec:
+  selector:
+    app: procurement-service
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+

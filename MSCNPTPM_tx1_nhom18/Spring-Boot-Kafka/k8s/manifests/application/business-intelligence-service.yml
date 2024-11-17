@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: business-intelligence-service
+  name: business-intelligence-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: business-intelligence-service
+  template:
+    metadata:
+      labels:
+        app: business-intelligence-service
+    spec:
+      containers:
+        - image: trdhuy21/mscn-tx1-business-intelligence-service:latest
+          name: mscn-tx1-business-intelligence-service
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: SPRING_KAFKA_BOOTSTRAP-SERVERS
+                  name: common-config
+            - name: PROCUREMENT_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: PROCUREMENT_SERVICE_URL
+                  name: common-config
+            - name: INVENTORY_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: INVENTORY_SERVICE_URL
+                  name: common-config
+            - name: SALES_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: SALES_SERVICE_URL
+                  name: common-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-intelligence-service
+spec:
+  selector:
+    app: business-intelligence-service
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+

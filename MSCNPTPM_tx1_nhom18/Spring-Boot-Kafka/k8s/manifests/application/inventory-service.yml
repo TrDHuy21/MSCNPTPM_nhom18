@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: inventory-service
+  name: inventory-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+        - image: trdhuy21/mscn-tx1-inventory-service:latest
+          name: mscn-tx1-inventory-service
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: SPRING_KAFKA_BOOTSTRAP-SERVERS
+                  name: common-config
+            - name: BUSINESS_INTELLIGENCE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: BUSINESS_INTELLIGENCE_SERVICE_URL
+                  name: common-config
+            - name: PROCUREMENT_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: PROCUREMENT_SERVICE_URL
+                  name: common-config
+            - name: SALES_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: SALES_SERVICE_URL
+                  name: common-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+spec:
+  selector:
+    app: inventory-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+

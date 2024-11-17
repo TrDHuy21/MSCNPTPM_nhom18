@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-config
+data:
+  BUSINESS_INTELLIGENCE_SERVICE_URL: "http://business-intelligence.default.svc.cluster.local:8083"
+  PROCUREMENT_SERVICE_URL: "http://procurement-service.default.svc.cluster.local:8081"
+  INVENTORY_SERVICE_URL: "http://inventory-service.default.svc.cluster.local:8080"
+  SALES_SERVICE_URL: "http://sales-service.default.svc.cluster.local:8082"
+  SPRING_KAFKA_BOOTSTRAP-SERVERS: "broker.default.svc.cluster.local:29092"
