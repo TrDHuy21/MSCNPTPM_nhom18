@@ -8,9 +8,9 @@
 ## Cấu trúc Solution
 ├── GUI/ # Thư mục chứa dự án giao diện người dùng (WPF)<br>
 ├── ProductSalesAnomalyDetection/ # Thư mục chứa dự án phân tích (console app) <br>
-   ├── Data/ # Thư mục chứa các tệp CSV mẫu <br>
-   ├── README.md # File hướng dẫn <br>
-   └── ProductSales.sln # Solution file<br>
+   `├── Data/ # Thư mục chứa các tệp CSV mẫu <br>
+   `├── README.md # File hướng dẫn <br>
+   `└── ProductSales.sln # Solution file<br>
 ## Yêu cầu hệ thống
 - .NET SDK 6.0 hoặc mới hơn
 - Windows (cần thiết để chạy WPF)
