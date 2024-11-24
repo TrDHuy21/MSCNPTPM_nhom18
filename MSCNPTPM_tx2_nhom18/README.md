@@ -6,8 +6,8 @@
 2. **GUI**: Giao diện WPF cho phép người dùng dễ dàng chọn tệp `.csv`, xử lý dữ liệu và xem kết quả phân tích qua danh sách và biểu đồ.
 
 ## Cấu trúc Solution
-. ├── GUI/ # Thư mục chứa dự án giao diện người dùng (WPF) 
-   ├── ProductSalesAnomalyDetection/ # Thư mục chứa dự án phân tích (console app) 
+├── GUI/ # Thư mục chứa dự án giao diện người dùng (WPF)
+├── ProductSalesAnomalyDetection/ # Thư mục chứa dự án phân tích (console app) 
    ├── Data/ # Thư mục chứa các tệp CSV mẫu 
    ├── README.md # File hướng dẫn 
    └── ProductSales.sln # Solution file
