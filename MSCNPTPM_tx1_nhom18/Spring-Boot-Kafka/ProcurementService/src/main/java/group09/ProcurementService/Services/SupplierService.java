@@ -105,7 +105,7 @@ public class SupplierService {
     // REST REQUEST WORKS - IF KAFKA DOESN'T WORK ( WORST CASE )
     public void receiveFromInventory(Long supplierId, Long partId, int quantityNeeded) {
         System.out.println("--- PROCUREMENT REQUEST SAVED AND CONFIRMED -> ");
-        System.out.println("--- SUPPLIER ID    : " + supplierId);
+        System.out.println("--- SUPPLIER ID    : " + supplierId); 
         System.out.println("--- PART ID        : " + partId);
         System.out.println("--- QUANTITY NEEDED: " + quantityNeeded);
 
