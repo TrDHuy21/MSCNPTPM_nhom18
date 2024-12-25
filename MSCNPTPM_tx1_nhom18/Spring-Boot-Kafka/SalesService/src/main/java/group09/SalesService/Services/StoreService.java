@@ -33,18 +33,22 @@ public class StoreService {
         this.restTemplate = restTemplate;
     }
 
+    // service for getting all stores
     public List<Store> getStores() {
         return storeRepository.findAll();
     }
 
+    //service for getting a store by id
     public List<Store> getStore(Long id) {
         return storeRepository.findAllById(Collections.singleton(id));
     }
 
+    // service for create a store
     public Store createStore(Store store) {
         return storeRepository.save(store);
     }
 
+    // service for updating a store by id
     public Optional<Store> updateStore(Store newStore, Long id) {
         return storeRepository.findById(id)
                 .map(store -> {
@@ -55,6 +59,7 @@ public class StoreService {
                 });
     }
 
+    // service for deleting a store by id
     public void deleteStore(Long id) {
         storeRepository.deleteById(id);
     }
@@ -66,8 +71,12 @@ public class StoreService {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> request = new HttpEntity<>(headers);
         //make an HTTP GET request to check if there is a sale with given ID in the Sales Microservice
-        ResponseEntity<Boolean> validateSale = restTemplate.exchange("http://localhost:8082/sale/saleValidate/" + saleId.toString(),
-                HttpMethod.GET, request, Boolean.class);
+        ResponseEntity<Boolean> validateSale = restTemplate.exchange(
+                "http://localhost:8082/sale/saleValidate/" + saleId.toString(),
+                HttpMethod.GET,
+                request,
+                Boolean.class
+        );
         //if sale is valid
         if (Boolean.TRUE.equals(validateSale.getBody())) {
             System.out.println("Sale with ID ( " + saleId + " ) is VALID");

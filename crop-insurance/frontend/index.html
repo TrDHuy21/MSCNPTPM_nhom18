@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Insurance</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <h1>Crop Insurance DApp</h1>
+
+    <div>
+        <h2>1. Purchase Insurance</h2>
+        <input type="number" id="premiumAmount" placeholder="Premium Amount in ETH">
+        <button id="buyInsurance">Buy Insurance</button>
+    </div>
+
+    <div>
+        <h2>2. File a Claim</h2>
+        <input type="number" id="claimAmount" placeholder="Claim Amount in ETH">
+        <button id="fileClaim">File Claim</button>
+    </div>
+
+    <div>
+        <h2>3. Approve Claim</h2>
+        <input type="text" id="approveAddress" placeholder="Policy Holder Address">
+        <button id="approveClaim">Approve Claim</button>
+    </div>
+
+    <div>
+        <h2>4. Cancel Policy</h2>
+        <button id="cancelPolicy">Cancel Policy</button>
+    </div>
+
+    <div>
+        <h2>5. Grant Access</h2>
+        <input type="text" id="grantAddress" placeholder="Address to Grant Access">
+        <button id="grantAccess">Grant Access</button>
+    </div>
+
+    <div>
+        <h2>6. Revoke Access</h2>
+        <input type="text" id="revokeAddress" placeholder="Address to Revoke Access">
+        <button id="revokeAccess">Revoke Access</button>
+    </div>
+
+    <div>
+        <h2>7. Contract Balance</h2>
+        <button id="checkBalance">Check Balance</button>
+        <p>Contract Balance: <span id="contractBalance">0</span> ETH</p>
+    </div>
+
+    <div>
+        <h2>8. Check Policy</h2>
+        <input type="text" id="checkAddress" placeholder="Address to Check Policy">
+        <button id="checkPolicy">Check Policy</button>
+        <p>Policy Details: <span id="policyDetails">None</span></p>
+    </div>
+
+</body>
+</html>

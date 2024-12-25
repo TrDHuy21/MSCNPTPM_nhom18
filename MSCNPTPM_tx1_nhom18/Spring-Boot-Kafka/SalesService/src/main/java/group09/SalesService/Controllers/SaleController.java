@@ -81,7 +81,7 @@ public class SaleController {
     //validate sale
     @GetMapping("/saleValidate/{saleId}")
     public boolean validateSale(@PathVariable Long saleId){
-        return salesService.validateID(saleId);
+        return salesService.validateSaleByID(saleId);
     }
 
     //accept back order option for inStoreSale
@@ -92,7 +92,7 @@ public class SaleController {
 
     //accept back order option for OnlineSale
     @PostMapping("/createBackOrderSale/OnlineSale")
-    String createBackOrderInStoreSale(@RequestBody OnlineSale onlineSale){
+    String createBackOrderOnlineSale(@RequestBody OnlineSale onlineSale){
         return salesService.createBackOrderOnlineSale(onlineSale);
     }
 }

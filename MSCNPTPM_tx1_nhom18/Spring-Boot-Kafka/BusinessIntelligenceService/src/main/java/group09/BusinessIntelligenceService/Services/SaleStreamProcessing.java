@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerde;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,7 +41,7 @@ public class SaleStreamProcessing {
                 saleEvent.setQuantity(productQuantity);
                 saleEvent.setProductPrice(price);
 
-                String new_key = productName+productId;
+                String new_key = productName + productId;
                 return KeyValue.pair(new_key, saleEvent);
             }).toTable(
                     Materialized.<String, SaleEvent, KeyValueStore<Bytes, byte[]>>as(PRODUCT_STATE_STORE)
@@ -62,8 +63,7 @@ public class SaleStreamProcessing {
                 String productName = value.getProductName();
                 long orderQuantity = value.getQuantity();
 
-                return
-                        KeyValue.pair(productName, orderQuantity);
+                return KeyValue.pair(productName, orderQuantity);
             }).groupByKey().aggregate(() -> 0.0,
                     (key, value, total) -> total + value,
                     Materialized.with(Serdes.String(), Serdes.Double()));

@@ -104,10 +104,9 @@ public class SalesService {
 
     //---------------------------- ( SALE VALIDATE ) -------------------------------------------------------------------
 
-    public boolean validateID(Long saleId) {
+    public boolean validateSaleByID(Long saleId) {
         boolean idValid = inStoreSaleRepository.existsById(saleId);
-        if (idValid)
-        {
+        if (idValid) {
             InStoreSale sale = inStoreSaleRepository.findById(saleId).orElseThrow(RuntimeException::new);
             System.out.println("Sale with ID ( " + sale.getSaleId() + " ) is VALID");
             return true;
@@ -125,12 +124,18 @@ public class SalesService {
     //CUTOMERS USE THE BELOW METHODS
     //CREATE IN STORE SALE ****************************************************************************************************************************************
 
-    public String createInStoreSale(InStoreSale sale)
-    {
-        //Long storeId = sale.getStoreId();
+    public String createInStoreSale(InStoreSale sale) {
+        /*
+        1. lấy ra danh sách sale của store
+        2. kiểm tra id sản phẩm có tồn tại không
+        3. kiểm tra số lượng sản phẩm và parts
+        4. gửi sự kiện sale
+        */
+        // 1.
         Store store = sale.getStore();
-        //Store store = storeRepository.findById(storeId).orElseThrow(RuntimeException::new);
         List<InStoreSale> listOfSales = new ArrayList<>();
+
+        // 2.
         Long productId = sale.getProductId();
         // create an instance of RestTemplate
         RestTemplate restTemplate = new RestTemplate();
@@ -139,11 +144,10 @@ public class SalesService {
         // make an HTTP GET request to validate Product
         ResponseEntity<Boolean> validateProduct = restTemplate.exchange("http://localhost:8080/product/productsValidate/" + productId.toString(),
                 HttpMethod.GET, request, Boolean.class);
-        if(Boolean.TRUE.equals(validateProduct.getBody()))
-        {
+        if (Boolean.TRUE.equals(validateProduct.getBody())) {
             System.out.println("Product ID is VALID, we are now checking quantity of both PRODUCT and PART");
-            if( saveOrder(productId, sale.getQuantity()) )
-            {
+            // 3.
+            if (saveOrder(productId, sale.getQuantity())) {
                 inStoreSaleRepository.save(sale);
 //                if (!store.getSales().isEmpty()) {
 //                    listOfSales.addAll(store.getSales());
@@ -163,19 +167,17 @@ public class SalesService {
                 System.out.println("PRODUCT PRICE = " + productPrice);
                 //----------------------------------------------------
                 SaleEvent saleEvent = new SaleEvent(productId, productName, productPrice, sale.getQuantity());
+                // 4.
                 streamBridge.send("order-event-outbound", saleEvent);
                 //----------------------------------------------------
                 System.out.println("--- ORDER CONFIRMED");
                 return "--- ORDER CONFIRMED";
-            }
-            else
-            {
+            } else {
                 System.out.println("--- ORDER IS NOT CONFIRMED, BACK ORDER OPTION AVAILABLE");
                 return "--- ORDER IS NOT CONFIRMED, BACK ORDER OPTION AVAILABLE";
                 //back order option
             }
-        }else
-        {
+        } else {
             System.out.println("Product ID is NOT VALID");
             return "Product ID is NOT VALID";
         }
@@ -192,11 +194,9 @@ public class SalesService {
         // make an HTTP GET request to validate Product
         ResponseEntity<Boolean> validateProduct = restTemplate.exchange("http://localhost:8080/product/productsValidate/" + productId.toString()
                 , HttpMethod.GET, request, Boolean.class);
-        if(Boolean.TRUE.equals(validateProduct.getBody()))
-        {
+        if (Boolean.TRUE.equals(validateProduct.getBody())) {
             System.out.println("Product ID is VALID, we are now checking quantity of both PRODUCT and PART");
-            if( saveOrder( productId, sale.getQuantity()) )
-            {
+            if (saveOrder(productId, sale.getQuantity())) {
                 onlineSaleRepository.save(sale);
 
                 //----------------------------------------------------
@@ -215,14 +215,11 @@ public class SalesService {
 
                 System.out.println("--- ORDER CONFIRMED");
                 return "--- ORDER CONFIRMED";
-            }
-            else
-            {
+            } else {
                 System.out.println("--- ORDER IS NOT CONFIRMED, PLEASE APPLY BACK ORDER OPTION");
                 return "--- ORDER IS NOT CONFIRMED, PLEASE APPLY BACK ORDER OPTION";
             }
-        }else
-        {
+        } else {
             System.out.println("--- ORDER IS NOT CONFIRMED, PRODUCT ID IS NOT VALID");
             return "--- ORDER IS NOT CONFIRMED, PRODUCT ID IS NOT VALID";
         }
@@ -231,61 +228,44 @@ public class SalesService {
     //*************************************************************************************************************************************************************
     //SAVE ORDER FOR BOTH IN STORE AND ONLINE SALE ****************************************************************************************************************
 
-    public boolean saveOrder(Long productId, int quantity){
+    public boolean saveOrder(Long productId, int quantity) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<Boolean> productStockQuantity = restTemplate.exchange("http://localhost:8080/product/productQuantityById/" + productId.toString() + "/" + quantity,
                 HttpMethod.GET, request, Boolean.class);
         System.out.println("RESPONSE FROM INVENTORY --- ( " + productStockQuantity.getBody() + " ) ---");
-        if(Boolean.TRUE.equals(productStockQuantity.getBody()))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+
+        return Boolean.TRUE.equals(productStockQuantity.getBody());
     }
 
     //*************************************************************************************************************************************************************
     //BACK ORDER SALE FOR IN STORE SALE ***************************************************************************************************************************
 
     public String createBackOrderInStoreSale(InStoreSale inStoreSale) {
-        //Long storeId = inStoreSale.getStoreId();
         Store store = inStoreSale.getStore();
-        //Store store = storeRepository.findById(storeId).orElseThrow(RuntimeException::new);
         List<InStoreSale> listOfInStoreSales = new ArrayList<>();
         boolean saveOrder = saveOrder(inStoreSale.getProductId(), inStoreSale.getQuantity());
-        if(Boolean.FALSE.equals(saveOrder))
-        {
+        if (Boolean.FALSE.equals(saveOrder)) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<String> request = new HttpEntity<>(headers);
             ResponseEntity<Boolean> requestInventory = restTemplate.exchange("http://localhost:8080/product/procurementRequest/" +
                             inStoreSale.getProductId() + "/" + inStoreSale.getQuantity(),
                     HttpMethod.GET, request, Boolean.class);
-            if(Boolean.TRUE.equals(requestInventory.getBody()))
-            {
+            if (Boolean.TRUE.equals(requestInventory.getBody())) {
                 saleRepository.save(inStoreSale);
                 System.out.println("--- BACK ORDER CONFIRMED ----");
-//                if (!store.getSales().isEmpty()) {
-//                    listOfInStoreSales.addAll(store.getSales());
-//                }
                 listOfInStoreSales.add(inStoreSale);
                 store.setSales(listOfInStoreSales);
                 inStoreSale.setStore(store);
                 storeRepository.save(store);
                 return "--- BACK ORDER CONFIRMED ----";
-            }
-            else
-            {
+            } else {
                 System.out.println("--- BACK ORDER NOT CONFIRMED ----");
                 return "--- BACK ORDER NOT CONFIRMED ----";
             }
-        }
-        else
-        {
+        } else {
             saleRepository.save(inStoreSale);
             if (!store.getSales().isEmpty()) {
                 listOfInStoreSales.addAll(store.getSales());
@@ -293,7 +273,7 @@ public class SalesService {
             listOfInStoreSales.add(inStoreSale);
             store.setSales(listOfInStoreSales);
             storeRepository.save(store);
-             return "--- BACK ORDER CONFIRMED ----";
+            return "--- BACK ORDER CONFIRMED ----";
         }
     }
 
@@ -302,30 +282,24 @@ public class SalesService {
 
     public String createBackOrderOnlineSale(OnlineSale onlineSale) {
         boolean saveOrder = saveOrder(onlineSale.getProductId(), onlineSale.getQuantity());
-        if(Boolean.FALSE.equals(saveOrder))
-        {
+        if (Boolean.FALSE.equals(saveOrder)) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<String> request = new HttpEntity<>(headers);
             ResponseEntity<Boolean> requestInventory = restTemplate.exchange("http://localhost:8080/product/procurementRequest/" +
                             onlineSale.getProductId().toString() + "/" + onlineSale.getQuantity(),
                     HttpMethod.GET, request, Boolean.class);
-            if(Boolean.TRUE.equals(requestInventory.getBody()))
-            {
+            if (Boolean.TRUE.equals(requestInventory.getBody())) {
                 saleRepository.save(onlineSale);
                 System.out.println("--- BACK ORDER CONFIRMED ----");
                 return "--- BACK ORDER CONFIRMED ----";
-            }
-            else
-            {
+            } else {
                 System.out.println("--- BACK ORDER NOT CONFIRMED ----");
                 return "--- BACK ORDER NOT CONFIRMED ----";
             }
-        }
-        else
-        {
-             saleRepository.save(onlineSale);
-             return "--- BACK ORDER CONFIRMED ----";
+        } else {
+            saleRepository.save(onlineSale);
+            return "--- BACK ORDER CONFIRMED ----";
         }
     }
 }

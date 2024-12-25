@@ -6,16 +6,11 @@ import group09.InventoryService.Entities.BackOrder;
 import group09.InventoryService.Entities.Part;
 import group09.InventoryService.Entities.Product;
 import group09.InventoryService.Entities.jsonWrapper;
-//import group09.InventoryService.KafkaConfig.KafkaProducer;
 import group09.InventoryService.Repositories.PartRepository;
 import group09.InventoryService.Repositories.ProductRepository;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

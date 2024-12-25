@@ -10,6 +10,7 @@ import org.springframework.cloud.stream.binder.kafka.streams.InteractiveQuerySer
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SaleInteractiveQuery {
@@ -22,7 +23,7 @@ public class SaleInteractiveQuery {
     }
 
     public String  getProductTotalSalesValue (Long productId) {
-        Long totalSalesValue = 0L;
+        long totalSalesValue = 0L;
 
         KeyValueIterator<String, SaleEvent> all = productSaleEventStore().all();
         while (all.hasNext()) {
@@ -30,12 +31,11 @@ public class SaleInteractiveQuery {
             Long table_productId = saleEvent.getProductId();
             long quantity = saleEvent.getQuantity();
             long price = saleEvent.getProductPrice();
-            if (table_productId == (productId)) {
+            if (Objects.equals(table_productId, productId)) {
                 totalSalesValue += (quantity * price);
             }
         }
-        String result = "Total Sales Value = " + totalSalesValue.toString();
-        return result;
+        return "Total Sales Value = " + Long.toString(totalSalesValue);
     }
 
     public ReadOnlyKeyValueStore<String, SaleEvent> productSaleEventStore() {
